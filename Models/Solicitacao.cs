@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGSC.Models
@@ -24,5 +25,11 @@ namespace SGSC.Models
         public string NumeroProtocolo { get; set; }
 
         public DateTime DataCriacao { get; set; } = DateTime.Now;
+
+        // Relacionamento com o usuário do Identity (armazenamos o Id)
+        public string? UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public IdentityUser? User { get; set; }
     }
 }

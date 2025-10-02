@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SGSC.Data;
 using SGSC.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SGSC.Controllers
 {
+    [Authorize]
     public class SolicitacaosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,8 +25,15 @@ namespace SGSC.Controllers
         // GET: Solicitacaos
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Solicitacoes.Include(s => s.Servico);
-            return View(await applicationDbContext.ToListAsync());
+            // pega o Id do usuário logado
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // filtra apenas as solicitações deste usuário
+            var solicitacoesDoUsuario = _context.Solicitacoes
+                                               .Where(s => s.UserId == userId)
+                                               .Include(s => s.Servico);
+
+            return View(await solicitacoesDoUsuario.ToListAsync());
         }
 
         // GET: Solicitacaos/Details/5
@@ -53,8 +63,6 @@ namespace SGSC.Controllers
         }
 
         // POST: Solicitacaos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ServicoId,Descricao,NumeroProtocolo")] Solicitacao solicitacao)
@@ -69,11 +77,16 @@ namespace SGSC.Controllers
 
             if (ModelState.IsValid)
             {
+                // 🔹 vincula a solicitação ao usuário logado
+                solicitacao.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 solicitacao.DataCriacao = DateTime.Now;
+
                 _context.Add(solicitacao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ServicoId"] = new SelectList(_context.Servicos, "Id", "Nome", solicitacao.ServicoId);
             return View(solicitacao);
         }
@@ -86,18 +99,24 @@ namespace SGSC.Controllers
                 return NotFound();
             }
 
-            var solicitacao = await _context.Solicitacoes.FindAsync(id);
+            // Pega o ID do usuário logado
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Busca a solicitação que pertence ao usuário
+            var solicitacao = await _context.Solicitacoes
+                                            .Where(s => s.UserId == userId)
+                                            .FirstOrDefaultAsync(s => s.Id == id);
+
             if (solicitacao == null)
             {
-                return NotFound();
+                return NotFound(); // ou Unauthorized() se preferir
             }
+
             ViewData["ServicoId"] = new SelectList(_context.Servicos, "Id", "Nome", solicitacao.ServicoId);
             return View(solicitacao);
         }
 
         // POST: Solicitacaos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ServicoId,Descricao,NumeroProtocolo,DataCriacao")] Solicitacao solicitacao)
@@ -107,16 +126,32 @@ namespace SGSC.Controllers
                 return NotFound();
             }
 
+            // Pega o ID do usuário logado
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Verifica se a solicitação realmente pertence ao usuário
+            var solicitacaoExistente = await _context.Solicitacoes
+                                                    .AsNoTracking()
+                                                    .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitacaoExistente == null)
+            {
+                return Unauthorized(); // não pode editar solicitação de outro usuário
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Mantém o UserId correto
+                    solicitacao.UserId = userId;
+
                     _context.Update(solicitacao);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SolicitacaoExists(solicitacao.Id))
+                    if (!_context.Solicitacoes.Any(e => e.Id == solicitacao.Id))
                     {
                         return NotFound();
                     }
@@ -127,6 +162,7 @@ namespace SGSC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ServicoId"] = new SelectList(_context.Servicos, "Id", "Nome", solicitacao.ServicoId);
             return View(solicitacao);
         }
@@ -139,12 +175,15 @@ namespace SGSC.Controllers
                 return NotFound();
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var solicitacao = await _context.Solicitacoes
                 .Include(s => s.Servico)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId); // filtra pelo usuário logado
+
             if (solicitacao == null)
             {
-                return NotFound();
+                return Unauthorized(); // ou NotFound(), dependendo da UX que você deseja
             }
 
             return View(solicitacao);
@@ -155,19 +194,19 @@ namespace SGSC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var solicitacao = await _context.Solicitacoes.FindAsync(id);
-            if (solicitacao != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var solicitacao = await _context.Solicitacoes
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId); // filtra pelo usuário logado
+
+            if (solicitacao == null)
             {
-                _context.Solicitacoes.Remove(solicitacao);
+                return Unauthorized(); // não pode deletar de outro usuário
             }
 
+            _context.Solicitacoes.Remove(solicitacao);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool SolicitacaoExists(int id)
-        {
-            return _context.Solicitacoes.Any(e => e.Id == id);
         }
     }
 }
