@@ -13,5 +13,7 @@ namespace SGSC.Data
 
         // DbSet para o modelo Serviço
         public DbSet<Servico> Servicos { get; set; }
+        public DbSet<Solicitacao> Solicitacoes { get; set; }
+
     }
 }
