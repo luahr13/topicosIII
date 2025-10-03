@@ -150,10 +150,18 @@ namespace SGSC.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+         
         private bool ServicoExists(int id)
         {
             return _context.Servicos.Any(e => e.Id == id);
+        }
+
+        // GET: Servicos/ListarParaCidadao
+        [AllowAnonymous]
+        public async Task<IActionResult> ListarParaCidadao()
+        {
+            var servicos = await _context.Servicos.ToListAsync();
+            return View(servicos);
         }
     }
 }

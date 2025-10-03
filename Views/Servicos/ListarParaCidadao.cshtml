@@ -1,0 +1,75 @@
+﻿@model IEnumerable<SGSC.Models.Servico>
+
+@{
+    ViewData["Title"] = "Serviços";
+}
+
+<h1 class="mb-4" style="color:#033666;">Serviços Disponíveis</h1>
+
+<style>
+    /* Container de cards */
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    /* Card do serviço */
+    .service-card {
+        background-color: #ffffff;
+        border: 1px solid #033666;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 200px;
+    }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+
+        .service-card h5 {
+            color: #033666;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .service-card p {
+            color: #333333;
+            flex-grow: 1;
+        }
+
+    .btn-request {
+        background-color: #033666;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        text-align: center;
+        text-decoration: none;
+    }
+
+        .btn-request:hover {
+            background-color: #0252a2;
+            color: white;
+            text-decoration: none;
+        }
+</style>
+
+<div class="cards-container">
+    @foreach (var servico in Model)
+    {
+        <div class="service-card">
+            <h5>@servico.Nome</h5>
+            <p>@servico.Descricao</p>
+            <a asp-controller="Solicitacaos" asp-action="Create" asp-route-servicoId="@servico.Id" class="btn-request mt-3">Solicitar</a>
+        </div>
+    }
+</div>
