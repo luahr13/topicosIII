@@ -25,15 +25,24 @@ namespace SGSC.Controllers
         // GET: Solicitacaos
         public async Task<IActionResult> Index()
         {
-            // pega o Id do usuário logado
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // filtra apenas as solicitações deste usuário
-            var solicitacoesDoUsuario = _context.Solicitacoes
-                                               .Where(s => s.UserId == userId)
-                                               .Include(s => s.Servico);
-
-            return View(await solicitacoesDoUsuario.ToListAsync());
+            // Verifica se o usuário está na role Administrador
+            if (User.IsInRole("Administrador"))
+            {
+                // Admin vê todas as solicitações
+                var todasSolicitacoes = _context.Solicitacoes
+                                                .Include(s => s.Servico);
+                return View(await todasSolicitacoes.ToListAsync());
+            }
+            else
+            {
+                // Cidadão vê apenas suas próprias solicitações
+                var solicitacoesDoUsuario = _context.Solicitacoes
+                                                   .Where(s => s.UserId == userId)
+                                                   .Include(s => s.Servico);
+                return View(await solicitacoesDoUsuario.ToListAsync());
+            }
         }
 
         // GET: Solicitacaos/Details/5

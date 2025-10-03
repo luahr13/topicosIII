@@ -47,7 +47,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Login}/{id?}")
+    pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.MapRazorPages()
@@ -98,12 +98,5 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await CreateRolesAndAdmin(services);
 }
-
-// redireciona qualquer acesso à raiz "/" para a página de login
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/Identity/Account/Login");
-    return Task.CompletedTask;
-});
 
 app.Run();
