@@ -254,5 +254,23 @@ namespace SGSC.Controllers
 
             return RedirectToAction(nameof(Details), new { id = solicitacaoId });
         }
+
+        //POST Excluir Mensagem
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExcluirMensagem(int mensagemId, int solicitacaoId)
+        {
+            var mensagem = await _context.SolicitacaoMensagens
+                                         .FirstOrDefaultAsync(m => m.Id == mensagemId);
+
+            if (mensagem == null)
+                return NotFound();
+
+            _context.SolicitacaoMensagens.Remove(mensagem);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = solicitacaoId });
+        }
     }
 }

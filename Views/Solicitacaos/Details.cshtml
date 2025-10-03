@@ -53,6 +53,16 @@
                     <strong>@msg.UserEmail</strong> disse: <br />
                     @msg.Mensagem <br />
                     <small class="text-muted">@msg.DataEnvio.ToString("g")</small>
+
+                    @* Botão para excluir mensagem, apenas para administradores *@
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <form asp-action="ExcluirMensagem" method="post" class="d-inline">
+                            <input type="hidden" name="mensagemId" value="@msg.Id" />
+                            <input type="hidden" name="solicitacaoId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger mt-1">Excluir</button>
+                        </form>
+                    }
                 </div>
             </div>
         }
