@@ -49,17 +49,32 @@ namespace SGSC.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var solicitacao = await _context.Solicitacoes
                 .Include(s => s.Servico)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (solicitacao == null)
-            {
                 return NotFound();
-            }
+
+            // Carrega mensagens relacionadas
+            var mensagens = await _context.SolicitacaoMensagens
+                .Where(m => m.SolicitacaoId == id)
+                .OrderBy(m => m.DataEnvio)
+                .Select(m => new
+                {
+                    m.Id,
+                    m.Mensagem,
+                    m.DataEnvio,
+                    UserEmail = _context.Users
+                           .Where(u => u.Id == m.UserId)
+                           .Select(u => u.Email)
+                           .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            ViewBag.Mensagens = mensagens;
 
             return View(solicitacao);
         }
@@ -216,6 +231,28 @@ namespace SGSC.Controllers
             _context.Solicitacoes.Remove(solicitacao);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        //POST EEnviar Mensagem
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnviarMensagem(int solicitacaoId, string mensagem)
+        {
+            if (string.IsNullOrWhiteSpace(mensagem))
+                return RedirectToAction(nameof(Details), new { id = solicitacaoId });
+
+            var conteudo = new SolicitacaoMensagem
+            {
+                SolicitacaoId = solicitacaoId,
+                Mensagem = mensagem,
+                DataEnvio = DateTime.Now,
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            };
+
+            _context.Add(conteudo);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = solicitacaoId });
         }
     }
 }

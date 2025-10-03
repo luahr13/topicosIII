@@ -31,5 +31,8 @@ namespace SGSC.Models
 
         [ForeignKey("UserId")]
         public IdentityUser? User { get; set; }
+
+        //Relacionamento com mensagens
+        public ICollection<SolicitacaoMensagem> Mensagens { get; set; } = new List<SolicitacaoMensagem>();
     }
 }

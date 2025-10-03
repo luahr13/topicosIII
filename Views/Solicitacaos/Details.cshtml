@@ -1,42 +1,82 @@
 ﻿@model SGSC.Models.Solicitacao
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes da Solicitação";
 }
 
-<h1>Details</h1>
+<h1>Detalhes da Solicitação</h1>
 
 <div>
-    <h4>Solicitacao</h4>
+    <h4>Solicitação</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Servico)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Model.Servico?.Nome
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Descricao)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Descricao)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.NumeroProtocolo)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NumeroProtocolo)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DataCriacao)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DataCriacao)
         </dd>
     </dl>
 </div>
+
+<hr />
+
+<h4>Mensagens</h4>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (ViewBag.Mensagens != null && ViewBag.Mensagens.Count > 0)
+    {
+        foreach (var msg in ViewBag.Mensagens)
+        {
+            <div class="card mb-2">
+                <div class="card-body">
+                    <strong>@msg.UserEmail</strong> disse: <br />
+                    @msg.Mensagem <br />
+                    <small class="text-muted">@msg.DataEnvio.ToString("g")</small>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Nenhuma mensagem ainda.</p>
+    }
+</div>
+
+<hr />
+
+<h4>Enviar nova mensagem</h4>
+<form asp-action="EnviarMensagem" method="post">
+    <input type="hidden" name="solicitacaoId" value="@Model.Id" />
+    <div class="mb-3">
+        <textarea name="mensagem" class="form-control" placeholder="Digite sua mensagem"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+
+<hr />
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Editar</a>
+    <a asp-action="Index" class="btn btn-light">Voltar</a>
 </div>
