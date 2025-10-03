@@ -4,13 +4,68 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="mb-4" style="color:#033666;">Solicitações</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Nova Solicitação</a>
 </p>
 
-<table class="table table-striped">
+<style>
+    /* Tabela moderna com cantos retos */
+    .table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .table-modern thead th {
+            background-color: #033666;
+            color: #ffffff;
+            border: none;
+            padding: 12px 15px;
+            font-weight: 600;
+            text-align: left;
+            border-radius: 0; /* Cantos retos */
+        }
+
+        .table-modern tbody tr {
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 0; /* Cantos retos */
+        }
+
+            .table-modern tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+
+        .table-modern td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            color: #333333;
+        }
+
+    .badge-nova {
+        background-color: #f0ad4e;
+        color: #000;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 12px;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* Alternar cores de linhas */
+    .table-modern tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
+
+<table class="table-modern">
     <thead>
         <tr>
             <th>@Html.DisplayNameFor(model => model.Servico)</th>
@@ -30,18 +85,17 @@
                 <td>@Html.DisplayFor(modelItem => item.NumeroProtocolo)</td>
                 <td>@item.DataCriacao.ToString("g")</td>
                 <td>
-                    @* Badge de nova mensagem *@
                     @if (ViewBag.NovasMensagens != null &&
                                     ViewBag.NovasMensagens.ContainsKey(item.Id) &&
                                     ViewBag.NovasMensagens[item.Id])
                     {
-                        <span class="badge bg-warning text-dark">Nova mensagem</span>
+                        <span class="badge-nova">Nova mensagem</span>
                     }
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detalhes</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Excluir</a>
                 </td>
             </tr>
         }

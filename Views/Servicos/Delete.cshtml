@@ -1,33 +1,76 @@
 ﻿@model SGSC.Models.Servico
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir Serviço";
 }
 
-<h1>Delete</h1>
+<h1 style="color:#033666;">Excluir Serviço</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h4>Serviço</h4>
+<hr />
+
+<style>
+    /* Labels e valores */
+    dt {
+        font-weight: 600;
+        color: #033666;
+    }
+
+    dd {
+        margin-bottom: 10px;
+        color: #333333;
+    }
+
+    /* Botões */
+    .btn-danger {
+        background-color: #033666;
+        border-color: #033666;
+        color: white;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+        .btn-danger:hover {
+            background-color: #0252a2;
+            border-color: #0252a2;
+        }
+
+    a.btn-back {
+        color: #033666;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 10px;
+    }
+
+        a.btn-back:hover {
+            color: #0252a2;
+            text-decoration: underline;
+        }
+
+    hr {
+        border-top: 1px solid #033666;
+    }
+</style>
+
 <div>
-    <h4>Servico</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Nome)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Nome)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Descricao)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Descricao)
         </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Excluir" class="btn btn-danger" />
+        <a asp-action="Index" class="btn-back">Voltar à lista</a>
     </form>
 </div>

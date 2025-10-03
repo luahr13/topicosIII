@@ -1,48 +1,156 @@
 ﻿@model SGSC.Models.Solicitacao
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Detalhes da Solicitação";
 }
 
-<h1>Edit</h1>
+<h1 class="mb-4" style="color:#033666;">Detalhes da Solicitação</h1>
 
-<h4>Solicitacao</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ServicoId" class="control-label"></label>
-                <select asp-for="ServicoId" class="form-control" asp-items="ViewBag.ServicoId"></select>
-                <span asp-validation-for="ServicoId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descricao" class="control-label"></label>
-                <input asp-for="Descricao" class="form-control" />
-                <span asp-validation-for="Descricao" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumeroProtocolo" class="control-label"></label>
-                <input asp-for="NumeroProtocolo" class="form-control" />
-                <span asp-validation-for="NumeroProtocolo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DataCriacao" class="control-label"></label>
-                <p class="form-control-plaintext">@Model.DataCriacao.ToString("g")</p>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<style>
+    /* Estilo geral dos detalhes */
+    .detalhes-container {
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin-bottom: 30px;
+    }
+
+        .detalhes-container h4 {
+            color: #033666;
+            margin-bottom: 15px;
+        }
+
+        .detalhes-container dl dt {
+            font-weight: 600;
+            color: #033666;
+        }
+
+        .detalhes-container dl dd {
+            color: #333333;
+            margin-bottom: 10px;
+        }
+
+    /* Cards de mensagens */
+    .msg-card {
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .msg-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .msg-card strong {
+            color: #033666;
+        }
+
+    .badge-nova-msg {
+        background-color: #f0ad4e;
+        color: #000;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        margin-left: 5px;
+    }
+
+    /* Botões */
+    .btn-primary {
+        background-color: #033666;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0252a2;
+        }
+
+    .btn-secondary {
+        background-color: #f5f5f5;
+        color: #033666;
+        border: 1px solid #ccc;
+    }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+    textarea.form-control {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+</style>
+
+<div class="detalhes-container">
+    <h4>Solicitação</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Servico)</dt>
+        <dd class="col-sm-9">@Model.Servico?.Nome</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Descricao)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Descricao)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.NumeroProtocolo)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.NumeroProtocolo)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DataCriacao)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DataCriacao)</dd>
+    </dl>
+</div>
+
+<div class="detalhes-container">
+    <h4>Mensagens</h4>
+    <div>
+        @if (ViewBag.Mensagens != null && ViewBag.Mensagens.Count > 0)
+        {
+            foreach (var msg in ViewBag.Mensagens)
+            {
+                <div class="msg-card">
+                    <strong>@msg.UserEmail</strong> disse:
+                    <br />
+                    @msg.Mensagem
+                    <br />
+                    <small class="text-muted">@msg.DataEnvio.ToString("g")</small>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <form asp-action="ExcluirMensagem" method="post" class="d-inline">
+                            <input type="hidden" name="mensagemId" value="@msg.Id" />
+                            <input type="hidden" name="solicitacaoId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger mt-1">Excluir</button>
+                        </form>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p>Nenhuma mensagem ainda.</p>
+        }
     </div>
+
+    <hr />
+
+    <h4>Enviar nova mensagem</h4>
+    <form asp-action="EnviarMensagem" method="post">
+        <input type="hidden" name="solicitacaoId" value="@Model.Id" />
+        <div class="mb-3">
+            <textarea name="mensagem" class="form-control" placeholder="Digite sua mensagem"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<hr />
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<div class="detalhes-container text-end">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Editar</a>
+    <a asp-action="Index" class="btn btn-light">Voltar</a>
+</div>

@@ -1,30 +1,55 @@
 ﻿@model SGSC.Models.Servico
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Serviço";
 }
 
-<h1>Details</h1>
+<h1 style="color:#033666;">Detalhes do Serviço</h1>
+
+<h4>Serviço</h4>
+<hr />
+
+<style>
+    /* Labels e valores */
+    dt {
+        font-weight: 600;
+        color: #033666;
+    }
+
+    dd {
+        color: #333;
+    }
+
+    /* Botões */
+    a.btn-back {
+        color: #033666;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        a.btn-back:hover {
+            color: #0252a2;
+            text-decoration: underline;
+        }
+
+    hr {
+        border-top: 1px solid #033666;
+    }
+</style>
 
 <div>
-    <h4>Servico</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Nome)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Nome)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Descricao)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Descricao)</dd>
     </dl>
 </div>
+
+<hr />
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn-back">Voltar à lista</a>
 </div>

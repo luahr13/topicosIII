@@ -4,38 +4,79 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="mb-4" style="color:#033666;">Serviços</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Novo Serviço</a>
 </p>
-<table class="table">
+
+<style>
+    /* Tabela moderna com cantos retos */
+    .table-modern {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .table-modern thead th {
+            background-color: #033666;
+            color: #ffffff;
+            border: none;
+            padding: 12px 15px;
+            font-weight: 600;
+            text-align: left;
+            border-radius: 0; /* Cantos retos */
+        }
+
+        .table-modern tbody tr {
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 0; /* Cantos retos */
+        }
+
+            .table-modern tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+
+        .table-modern td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            color: #333333;
+        }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* Alternar cores de linhas */
+    .table-modern tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
+
+<table class="table-modern">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descricao)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.Nome)</th>
+            <th>@Html.DisplayNameFor(model => model.Descricao)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Nome)</td>
+                <td>@Html.DisplayFor(modelItem => item.Descricao)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detalhes</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Excluir</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

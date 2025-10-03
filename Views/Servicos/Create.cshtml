@@ -1,38 +1,83 @@
 ﻿@model SGSC.Models.Servico
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Serviço";
 }
 
-<h1>Create</h1>
+<h1 style="color:#033666;">Criar Novo Serviço</h1>
 
-<h4>Servico</h4>
+<h4>Serviço</h4>
 <hr />
+
+<style>
+    /* Inputs e botões modernos */
+    .form-control {
+        border: 1px solid #033666;
+        border-radius: 0; /* Cantos retos */
+        padding: 8px 12px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: #0252a2;
+            box-shadow: 0 0 5px rgba(3,54,102,0.3);
+        }
+
+    .btn-primary {
+        background-color: #033666;
+        border-color: #033666;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+        .btn-primary:hover {
+            background-color: #0252a2;
+            border-color: #0252a2;
+        }
+
+    a.btn-back {
+        color: #033666;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        a.btn-back:hover {
+            text-decoration: underline;
+            color: #0252a2;
+        }
+</style>
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="form-group mb-3">
                 <label asp-for="Nome" class="control-label"></label>
                 <input asp-for="Nome" class="form-control" />
                 <span asp-validation-for="Nome" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Descricao" class="control-label"></label>
                 <input asp-for="Descricao" class="form-control" />
                 <span asp-validation-for="Descricao" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
+<hr />
+
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn-back">Voltar à lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
