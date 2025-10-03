@@ -15,7 +15,6 @@ namespace SGSC.Data
         public DbSet<Servico> Servicos { get; set; } // Tabela Serviços
         public DbSet<Solicitacao> Solicitacoes { get; set; } // Tabela Solicitações
         public DbSet<SolicitacaoMensagem> SolicitacaoMensagens { get; set; } // Tabela Mensagens das Solicitações
-
-
+        public DbSet<SolicitacaoLeitura> SolicitacaoLeituras { get; set; } // Tabela de Leitura das Solicitações
     }
 }
