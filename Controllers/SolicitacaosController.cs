@@ -23,17 +23,28 @@ namespace SGSC.Controllers
         }
 
         // GET: Solicitacaos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? dataInicio, DateTime? dataFim, bool apenasComMensagem = false)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var solicitacoes = _context.Solicitacoes
                 .Include(s => s.Servico)
+                .Include(s => s.User) // agora traz o usuário
                 .AsQueryable();
 
             if (!User.IsInRole("Administrador"))
             {
                 solicitacoes = solicitacoes.Where(s => s.UserId == userId);
+            }
+
+            // filtro por data (somente se admin mandou valores)
+            if (User.IsInRole("Administrador"))
+            {
+                if (dataInicio.HasValue)
+                    solicitacoes = solicitacoes.Where(s => s.DataCriacao >= dataInicio.Value);
+
+                if (dataFim.HasValue)
+                    solicitacoes = solicitacoes.Where(s => s.DataCriacao <= dataFim.Value);
             }
 
             var lista = await solicitacoes.ToListAsync();
@@ -54,7 +65,7 @@ namespace SGSC.Controllers
                 })
                 .ToListAsync();
 
-            ViewBag.NovasMensagens = lista.ToDictionary(
+            var novasMensagensDict = lista.ToDictionary(
                 s => s.Id,
                 s =>
                 {
@@ -62,6 +73,17 @@ namespace SGSC.Controllers
                     var leitura = leituras.FirstOrDefault(l => l.SolicitacaoId == s.Id);
                     return leitura == null || (ultimaMsg != null && ultimaMsg > leitura.UltimaVisualizacao);
                 });
+
+            // filtro "apenas com mensagens" para administrador
+            if (User.IsInRole("Administrador") && apenasComMensagem)
+            {
+                lista = lista.Where(s => novasMensagensDict.ContainsKey(s.Id) && novasMensagensDict[s.Id]).ToList();
+            }
+
+            ViewBag.NovasMensagens = novasMensagensDict;
+            ViewBag.DataInicio = dataInicio?.ToString("yyyy-MM-dd");
+            ViewBag.DataFim = dataFim?.ToString("yyyy-MM-dd");
+            ViewBag.ApenasComMensagem = apenasComMensagem;
 
             return View(lista);
         }
@@ -74,6 +96,7 @@ namespace SGSC.Controllers
 
             var solicitacao = await _context.Solicitacoes
                 .Include(s => s.Servico)
+                .Include(s => s.User) // agora traz o usuário
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (solicitacao == null)

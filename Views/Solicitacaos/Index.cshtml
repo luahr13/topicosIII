@@ -6,6 +6,28 @@
 
 <h1 class="mb-4" style="color:#033666;">Solicitações</h1>
 
+@if (User.IsInRole("Administrador"))
+{
+    <form method="get" class="mb-3 d-flex align-items-end gap-3">
+        <div>
+            <label>Data Início</label>
+            <input type="date" name="dataInicio" class="form-control" value="@ViewBag.DataInicio" />
+        </div>
+        <div>
+            <label>Data Fim</label>
+            <input type="date" name="dataFim" class="form-control" value="@ViewBag.DataFim" />
+        </div>
+        <div class="form-check mt-4">
+            <input type="checkbox" name="apenasComMensagem" class="form-check-input" value="true" @(ViewBag.ApenasComMensagem ? "checked" : "") />
+            <label class="form-check-label">Apenas com novas mensagens</label>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary">Limpar</a>
+        </div>
+    </form>
+}
+
 <p>
     <a asp-action="Create" class="btn btn-primary">Nova Solicitação</a>
 </p>
@@ -68,6 +90,7 @@
 <table class="table-modern">
     <thead>
         <tr>
+            <th>Solicitante</th>
             <th>@Html.DisplayNameFor(model => model.Servico)</th>
             <th>@Html.DisplayNameFor(model => model.Descricao)</th>
             <th>@Html.DisplayNameFor(model => model.NumeroProtocolo)</th>
@@ -80,6 +103,9 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
                 <td>@item.Servico?.Nome</td>
                 <td>@Html.DisplayFor(modelItem => item.Descricao)</td>
                 <td>@Html.DisplayFor(modelItem => item.NumeroProtocolo)</td>
